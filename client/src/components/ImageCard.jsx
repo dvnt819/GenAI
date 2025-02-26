@@ -39,6 +39,7 @@ const HoverOverlay= styled.div`
     transition: opacity 0.3s ease;
     border-radius:6px;
     justify-content:end;
+    padding: 12px;
 
     ${Card}:hover &{
         opacity:1;
@@ -48,8 +49,6 @@ const HoverOverlay= styled.div`
 const Prompt=styled.div`
     font-weight:400px;
     font-size:15px;
-    padding-left:5px;
-    padding-bottom:5px;
     color: ${({theme})=>theme.white};
     
 `
@@ -57,8 +56,6 @@ const Prompt=styled.div`
 const Author=styled.div`
     font-weight:600px;
     font-size:14px;
-    padding-left:5px;
-    padding-bottom:5px;
     color: ${({theme})=>theme.white};
     display:flex;
     gap:8px;
@@ -71,6 +68,8 @@ const ImageCard=({item})=>{
     return (
         <Card>
             <LazyLoadImage 
+                alt={item?.prompt}
+                style={{borderRadius:"12px"}}
                 width="100%"
                 src={item?.photo}/>
             <HoverOverlay>

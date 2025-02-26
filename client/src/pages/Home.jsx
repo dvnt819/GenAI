@@ -33,7 +33,7 @@ const Headline = styled.div`
 const Span = styled.div`
     font-size: 30px;
     font-weight:800;
-    color:${({theme})=>theme.secondary}
+    color:${({theme})=>theme.secondary};
 `
 
 const Wrapper=styled.div`

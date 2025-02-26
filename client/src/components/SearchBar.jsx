@@ -7,7 +7,7 @@ const SearchBarContainer= styled.div`
     display: flex;
     width: 90%;
     border: 1px solid ${({theme})=> theme.text_secondary+90};
-    color: ${({theme})=>theme.text_primary}
+    color: ${({theme})=>theme.text_primary};
     border-radius:8px;
     padding:12px 16px;
     cursor: pointer;
