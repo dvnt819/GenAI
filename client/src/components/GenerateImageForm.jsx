@@ -1,74 +1,90 @@
-import { AutoAwesome, Description } from "@mui/icons-material";
-import React from "react";
-import styled from "styled-components"
-import Button from "./button"
-import TextInput from "./TextInput"
+import React, { useState } from "react";
+import { AutoAwesome } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import Button from "./button";
+import TextInput from "./TextInput";
+import { CreatePost, GenerateAIImage } from "../api/index.js";
 
 const Form = styled.div`
-    flex:1;
+    flex: 1;
     padding: 16px 20px;
     display: flex;
     flex-direction: column;
     gap: 9%;
     justify-content: center;
-`
+`;
 
 const Top = styled.div`
     display: flex;
     flex-direction: column;
     gap: 6px;
-`
+`;
 
 const Title = styled.div`
     font-size: 28px;
-    font-weight: 500px;
-    color: ${({theme})=>theme.text_primary};
-`
+    font-weight: 500;
+    color: ${({ theme }) => theme.text_primary};
+`;
 
 const Desc = styled.div`
     font-size: 17px;
-    font-weight: 400px;
-    color: ${({theme})=>theme.text_secondary};
-`
+    font-weight: 400;
+    color: ${({ theme }) => theme.text_secondary};
+`;
 
 const Body = styled.div`
     display: flex;
     flex-direction: column;
     gap: 18px;
-    font-size: 12px
+    font-size: 12px;
     font-weight: 400;
-    color: ${({theme})=> theme.text_secondary};
-`
+    color: ${({ theme }) => theme.text_secondary};
+`;
 
 const Actions = styled.div`
-    flex:1;
-    display:flex;
-    gap:8px;
-`
-
+    flex: 1;
+    display: flex;
+    gap: 8px;
+`;
 
 const GenerateImageForm = ({
-
     post,
     setPost,
     createPostLoading,
     generateImageLoading,
     setGenerateImageLoading,
     setCreatePostLoading
-
 }) => {
-    const generateImageFun = () => {
+    const navigate = useNavigate();
+    const [error, setError] = useState("");
+
+    const generateImageFun = async () => {
         setGenerateImageLoading(true);
-    }
-    const createPostFun = () => {
-        setCreatePostLoading(true);     
-    }
+        try {
+            const res = await GenerateAIImage({ prompt: post.prompt });
+            setPost({ ...post, photo: `data:image/jpeg;base64,${res?.data?.photo}` });
+        } catch (error) {
+            setError(error?.response?.data?.message || "Failed to generate image.");
+        }
+        setGenerateImageLoading(false);
+    };
+
+    const createPostFun = async () => {
+        setCreatePostLoading(true);
+        try {
+            await CreatePost(post);
+            navigate("/");
+        } catch (error) {
+            setError(error?.response?.data?.message || "Failed to create post.");
+        }
+        setCreatePostLoading(false);
+    };
+
     return (
         <Form>
             <Top>
-                <Title>
-                    Generate Image with prompt.
-                </Title>
+                <Title>Generate Image with Prompt</Title>
                 <Desc>Write your prompt according to the image you want to generate</Desc>
             </Top>
             <Body>
@@ -76,39 +92,42 @@ const GenerateImageForm = ({
                     label="Author"
                     placeholder="Enter your name"
                     name="name"
-                    value={post.name}
-                    handelChange={(e) => setPost({...post,name:e.target.value})}
-                    />
+                    value={post?.name || ""}
+                    handleChange={(e) => setPost({ ...post, name: e.target.value })}
+                />
                 <TextInput 
                     label="Prompt" 
                     placeholder="Write a detailed prompt about the image" 
-                    name="name" 
+                    name="prompt" 
                     rows="8" 
                     textArea
-                    value={post.prompt}
-                    handelChange={(e)=>setPost({...post,prompt: e.target.value})}
-                    />
+                    value={post?.prompt || ""}
+                    handleChange={(e) => setPost({ ...post, prompt: e.target.value })}
+                />
+                {error && <div style={{ color: 'red' }}>{error}</div>}
             </Body>
-            You can post AI Generated Image to the Community...
+            <p>You can post AI Generated Image to the Community...</p>
             <Actions>
                 <Button 
                     text="Generate Image" 
-                    flex leftIcon={<AutoAwesome/>}
+                    flex 
+                    leftIcon={<AutoAwesome />}
                     isLoading={generateImageLoading}
-                    isDisabled={post.prompt === ""}
-                    onClick={()=>generateImageFun()}
-                    />
+                    isDisabled={!post?.prompt}
+                    onClick={generateImageFun}
+                />
                 <Button 
                     text="Post Image" 
-                    flex type="secondary" 
-                    leftIcon={<AutoAwesome/>}
+                    flex 
+                    type="secondary" 
+                    leftIcon={<AutoAwesome />}
                     isLoading={createPostLoading}
-                    isDisabled={post.name === "" ||  post.prompt === "" || post.photo === ""}
-                    onClick={()=>createPostFun()}
+                    isDisabled={!post?.name || !post?.prompt || !post?.photo}
+                    onClick={createPostFun}
                 />
             </Actions>
         </Form>
-    )
-}
+    );
+};
 
-export default GenerateImageForm
+export default GenerateImageForm;

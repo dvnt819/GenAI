@@ -15,7 +15,7 @@ const SearchBarContainer= styled.div`
     align-items: center;
 `
 
-const SearchBar=()=>{
+const SearchBar=({search,setSearch})=>{
     return (
         <SearchBarContainer>
             <SearchOutlined />
@@ -28,7 +28,11 @@ const SearchBar=()=>{
                     color: "inherit",
                     background: "transparent",
                     fontSize: "16px",
-                }}/>
+                }}
+                value={search}
+                onChange={(e)=> setSearch(e.target.value)}
+                
+                />
         </SearchBarContainer>
 
     )

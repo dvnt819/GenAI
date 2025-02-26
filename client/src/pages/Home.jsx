@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import SearchBar from '../components/SearchBar'
 import ImageCard from '../components/ImageCard'
@@ -60,50 +60,61 @@ const CardWrapper=styled.div`
 `
 
 const Home=()=>{
-    const item = {
-        photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Youngzin_Gemur_Khar_Lahaul_Jun24_A7CR_00176.jpg/750px-Youngzin_Gemur_Khar_Lahaul_Jun24_A7CR_00176.jpg",
-        author: "Dhvanit",
-        prompt: "HEY Prompt!",
-    } 
+    const [posts,setPosts] = useState([]);
+    const [loading,setLoading]=useState(false);
+    const [error,setError]=useState("");
+    const [search,setSearch]= useState("");
+    const [filteredPosts,setFilteredPosts]=useState([]);
+
+    const getPosts = async()=>{
+        setLoading(true)
+        await GetPosts().then((res)=>{
+            setLoading(false)
+            setPosts(res?.data?.data);
+            setFilteredPosts(res?.data?.data)
+        })
+        .catch((error)=>{
+            setError(error?.response?.data?.message);
+            setLoading(false);
+        })
+    }
+    
+    useEffect(()=>{
+        getPosts();
+    },[])
+
+    useEffect(()=>{
+        if(!search){
+            filteredPosts(posts);
+        }
+        const SearchfilteredPosts= posts.filter((post)=>{
+            const promptMatch=post?.prompt?.toLowerCase().includes(search);
+            const authorMatch=post?.name?.toLowerCase().includes(search);
+
+            return promptMatch || authorMatch;
+        });
+
+        if(search){
+            setFilteredPosts(SearchfilteredPosts);
+        }
+    },[posts,search])
+
     return (
         <Container>
             <Headline>
                 Explore popular posts in the Community!!!
                 <Span>Generated with AI</Span>
             </Headline>
-            <SearchBar />
+            <SearchBar search={search} setSearch={setSearch} />
             <Wrapper>
                 <CardWrapper>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>
-                    <ImageCard item={item}/>      
+                    {filteredPosts.length === 0 ? <>No Posts Found</>:
+                    <>
+                        {filteredPosts.slice().reverse().map((ListItem,index)=>(
+                            <ImageCard key={index} item={item}/>
+                        ))}
+                    </>
+                    }
                 </CardWrapper>
             </Wrapper>
         </Container>
