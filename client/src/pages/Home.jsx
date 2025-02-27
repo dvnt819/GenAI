@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import SearchBar from '../components/SearchBar'
 import ImageCard from '../components/ImageCard'
+import { useState, useEffect } from 'react'
+import { GetPosts } from '../api'
 
 const Container = styled.div`
     height:100%;
@@ -85,7 +87,7 @@ const Home=()=>{
 
     useEffect(()=>{
         if(!search){
-            filteredPosts(posts);
+            setFilteredPosts(posts);
         }
         const SearchfilteredPosts= posts.filter((post)=>{
             const promptMatch=post?.prompt?.toLowerCase().includes(search);
@@ -111,7 +113,7 @@ const Home=()=>{
                     {filteredPosts.length === 0 ? <>No Posts Found</>:
                     <>
                         {filteredPosts.slice().reverse().map((ListItem,index)=>(
-                            <ImageCard key={index} item={item}/>
+                            <ImageCard key={index} item={ListItem}/>
                         ))}
                     </>
                     }

@@ -88,22 +88,23 @@ const GenerateImageForm = ({
                 <Desc>Write your prompt according to the image you want to generate</Desc>
             </Top>
             <Body>
-                <TextInput 
-                    label="Author"
-                    placeholder="Enter your name"
-                    name="name"
-                    value={post?.name || ""}
-                    handleChange={(e) => setPost({ ...post, name: e.target.value })}
-                />
-                <TextInput 
-                    label="Prompt" 
-                    placeholder="Write a detailed prompt about the image" 
-                    name="prompt" 
-                    rows="8" 
-                    textArea
-                    value={post?.prompt || ""}
-                    handleChange={(e) => setPost({ ...post, prompt: e.target.value })}
-                />
+            <TextInput 
+                label="Author"
+                placeholder="Enter your name"
+                name="name"
+                value={post?.name || ""}
+                onChange={(e) => setPost({ ...post, name: e.target.value })}  
+            />
+            <TextInput 
+                label="Prompt" 
+                placeholder="Write a detailed prompt about the image" 
+                name="prompt" 
+                rows="8" 
+                textArea
+                value={post?.prompt || ""}
+                onChange={(e) => setPost({ ...post, prompt: e.target.value })}  
+            />
+
                 {error && <div style={{ color: 'red' }}>{error}</div>}
             </Body>
             <p>You can post AI Generated Image to the Community...</p>
